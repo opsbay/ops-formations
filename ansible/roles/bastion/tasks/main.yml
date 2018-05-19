@@ -1,0 +1,57 @@
+- name: Copy bootstrap script original from https://github.com/aws-quickstart/quickstart-linux-bastion/blob/master/scripts/bastion_bootstrap.sh
+  copy:
+    src: files/bastion_bootstrap.sh
+    dest: /home/ubuntu/bastion_bootstrap.sh
+    owner: ubuntu
+    group: ubuntu
+    mode: 0755
+
+# - name: Execute bootstrap script original from https://github.com/aws-quickstart/quickstart-linux-bastion/blob/master/scripts/bastion_bootstrap.sh
+#   script: files/bastion_bootstrap.sh --enable true --tcp-forwarding false --x11-forwarding false
+
+# - name: create bastion log folder
+#   file:
+#     path: /var/log/bastion
+#     state: directory
+#     owner: root
+#     group: ubuntu
+#     mode: 0662
+
+# - name: create bastion log file
+#   file:
+#     path: /var/log/bastion/bastion.log
+#     state: touch
+#     owner: root
+#     group: ubuntu
+#     mode: 0662
+
+# - name: create bastion log file shadow
+#   file:
+#     path: /var/log/bastion/.bastion.log
+#     state: touch
+#     owner: root
+#     group: ubuntu
+#     mode: 0662
+
+# - name: chown /usr/bin/script
+#   file:
+#     path: /usr/bin/script
+#     state: file
+#     owner: root
+#     group: ubuntu
+
+# - name: set bastion env variables
+#   blockinfile:
+#     dest: /etc/bash.bashrc
+#     block: |
+#       declare -rx IP=$(who am i --ips|awk '{print $5}')
+#       declare -rx BASTION_LOG=/var/log/bastion/bastion.log
+#       declare -rx PROMPT_COMMAND='history -a >(logger -t "ON: $(date)   [FROM]:${IP}   [USER]:${USER}   [PWD]:${PWD}" -s 2>>${BASTION_LOG})'
+#     insertafter: EOF
+
+# - name: chown /tmp/messages
+#   file:
+#     path: /tmp/messages
+#     state: directory
+#     owner: root
+#     group: ubuntu

@@ -1,0 +1,15 @@
+---
+- name: Setup bastion
+  hosts:
+    - tag_Name_bastion
+
+  vars:
+    env: dev
+
+  vars_files:
+    - "../../env/ansible_vars.yml"
+
+  roles:
+    - { role: bastion }
+
+  become: true

@@ -1,0 +1,3 @@
+#!/bin/sh
+CLOUDWATCHGROUP=/var/log/bastion
+/home/ubuntu/bastion_bootstrap.sh --enable true --tcp-forwarding true --x11-forwarding false

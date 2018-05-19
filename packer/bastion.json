@@ -1,0 +1,50 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "ami_name": "bastion-packer_{{isotime \"20060102-1504\"}}",
+      "region": "{{user `region`}}",
+      "instance_type": "t2.micro",
+      "source_ami_filter": {
+        "filters": {
+          "name": "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*",
+          "ena-support": "true",
+          "architecture": "x86_64",
+          "owner-id": "099720109477"
+        },
+        "most_recent": true
+      },
+      "run_tags": {
+        "Name": "PackerTemp{{timestamp}}",
+        "Environment": "Operation",
+        "env": "ops"
+      },
+      "iam_instance_profile": "packer",
+      "ssh_username": "ubuntu",
+      "ssh_timeout": "10m",
+      "tags": {
+        "Name": "bastion",
+        "Build":
+          "ami-bastion-packer_{{isotime \"20060102-1504\"}}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": ["sudo apt update", "sudo apt install -yq python"]
+    },
+    {
+      "type": "ansible",
+      "host_alias": "tag_Name_bastion",
+      "ansible_env_vars": ["ANSIBLE_ROLES_PATH=./ansible/roles"],
+      "playbook_file": "ansible/packer/bastion.yml"
+    }
+  ]
+}

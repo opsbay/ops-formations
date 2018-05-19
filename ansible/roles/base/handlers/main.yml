@@ -1,0 +1,27 @@
+- name: update timezone
+  command: dpkg-reconfigure --frontend noninteractive tzdata
+  become: true
+
+- name: restart cron
+  systemd:
+    name: cron
+    state: restarted
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_release == "xenial")
+
+- name: restart cron
+  service:
+    name: cron
+    state: restarted
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_release == "trusty")
+
+- name: restart chrony
+  systemd:
+    name: chrony
+    state: restarted
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_release == "xenial")
+
+- name: restart chrony
+  service:
+    name: chrony
+    state: restarted
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_release == "trusty")

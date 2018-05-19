@@ -1,0 +1,75 @@
+- name: apt-get update
+  apt:
+    update_cache: yes
+
+- name: Install list of packages
+  apt: name={{item}} state=installed
+  with_items:
+       - tmux
+       - dnsutils
+       - mtr
+       - ngrep
+       - tcpdump
+       - screen
+       - curl
+       - wget
+       - nano
+       - unzip
+       - awscli
+       - systemd
+       - htop
+       - tzdata
+       - chrony
+       - build-essential
+       - g++
+       - git
+       - python
+       - python-pip
+       - python3
+       - python3-pip
+       - cron
+
+- name: apt-get install systemd-shim
+  apt:
+    name: systemd-shim
+    state: present
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_release == "trusty")
+
+- name: set timezone variables
+  copy:
+    src: files/timezone
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - update timezone
+
+- name: rm local timezone file
+  file:
+    path: /etc/localtime
+    state: absent
+  notify:
+    - update timezone
+
+- name: syncronize time use Amazon Time Sync Service
+  lineinfile:
+    dest: /etc/chrony/chrony.conf
+    insertbefore: BOF
+    line: "server 169.254.169.123 prefer iburst"
+  notify:
+    - restart chrony
+
+- name: configure bash options
+  blockinfile:
+    dest: /etc/bash.bashrc
+    block: |
+      export LS_OPTIONS='--color=auto'
+      eval "`dircolors`"
+      alias ls='ls $LS_OPTIONS'
+      alias ll='ls $LS_OPTIONS -lh'
+      alias nano='nano -c'
+      alias nanov='nano -v'
+    create: yes
+    state: present
